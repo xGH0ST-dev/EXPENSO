@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Income & Expense Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Embedded CSS for a modern, premium look -->
+    <style>
+        :root {
+            --bg-color: #111827;
+            --surface-color: #1F2937;
+            --primary-color: #38BDF8;
+            --primary-hover: #7DD3FC;
+            --text-primary: #F9FAFB;
+            --text-secondary: #9CA3AF;
+            --border-color: #374151;
+            --shadow-color: rgba(0, 0, 0, 0.25);
+            --income-color: #10B981;
+            --expense-color: #EF4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-primary);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background: linear-gradient(-45deg, #111827, #1f2937, #111827, #374151);
+            background-size: 400% 400%;
+            animation: gradientBG 25s ease infinite;
+            min-height: 100vh;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* Styles for Auth Container */
+        #auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .auth-wrapper {
+            width: 100%;
+            max-width: 900px;
+            min-height: 600px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            border-radius: 16px;
+            overflow: hidden;
+            background: rgba(31, 41, 55, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .auth-branding {
+            padding: 3rem;
+            background: rgba(17, 24, 39, 0.5);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .branding-content h1 {
+            font-size: 2.25rem;
+            margin: 1.5rem 0 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .branding-content p {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            max-width: 300px;
+        }
+
+        .auth-form-panel {
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #login-box {
+            width: 100%;
+            max-width: 400px;
+        }
+
+        #login-form h2, #signup-form h2 {
+            text-align: center;
+            font-size: 1.75rem;
+        }
+
+        #login-form form button[type="submit"],
+        #signup-form form button[type="submit"] {
+            width: 100%;
+        }
+
+        .auth-form-toggle {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: var(--text-secondary);
+        }
+
+        .auth-form-toggle button {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            font-weight: 600;
+            cursor: pointer;
+            padding: 0.25rem;
+        }
+        .auth-form-toggle button:hover {
+            text-decoration: underline;
+        }
+
+        #error-message {
+            color: var(--expense-color);
+            text-align: center;
+            margin-top: 1rem;
+            min-height: 1.2em;
+            font-size: 0.875rem;
+        }
+        
+        .divider {
+            text-align: center;
+            margin: 1.5rem 0;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+        }
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .divider:not(:empty)::before {
+            margin-right: .5em;
+        }
+        .divider:not(:empty)::after {
+            margin-left: .5em;
+        }
+
+        .google-btn {
+            background-color: #fff;
+            color: #444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            width: 100%;
+            border: 1px solid #ddd;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .google-btn:hover {
+            background-color: #f7f7f7;
+        }
+        .google-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+        
+        /* Main App Container */
+        #app-container {
+            padding: 2rem;
+            display: none; /* Hidden by default */
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        header .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        #logout-btn {
+            background-color: var(--surface-color);
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            border: 1px solid var(--border-color);
+        }
+        #logout-btn:hover {
+            background-color: var(--border-color);
+        }
+
+        header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        
+        #clock {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-align: right;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: rgba(31, 41, 55, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+            padding: 1.5rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+        }
+
+        .summary-card {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .summary-card .icon {
+            font-size: 1.5rem;
+        }
+
+        .summary-card .title {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .summary-card .value {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+        .summary-card .value.income { color: var(--income-color); }
+        .summary-card .value.expense { color: var(--expense-color); }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: clamp(380px, 33%, 420px) 1fr;
+            gap: 1.5rem;
+            align-items: flex-start;
+        }
+        
+        h2 {
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+
+        .form-container form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .form-group label {
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 1rem;
+        }
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        input, select, button {
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: #374151;
+            color: var(--text-primary);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.3);
+        }
+        
+        input[type="file"] {
+            padding: 0.5rem;
+            background-color: var(--surface-color);
+        }
+
+        input[type="file"]::file-selector-button {
+            background-color: var(--primary-color);
+            border: none;
+            color: var(--bg-color);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        input[type="file"]::file-selector-button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        input:disabled {
+            background-color: #2b3544;
+            cursor: not-allowed;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: var(--bg-color);
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .controls-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            min-width: 0;
+        }
+        
+        #history-title {
+            margin-bottom: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        #back-btn {
+            background-color: var(--surface-color);
+            color: var(--text-primary);
+            padding: 0.5rem 0.75rem;
+            font-weight: 500;
+            border: 1px solid var(--border-color);
+            flex-shrink: 0;
+        }
+
+        #back-btn.hidden {
+            display: none;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .controls input, .controls select {
+            background-color: var(--surface-color);
+        }
+
+        #sort-order-btn {
+             background-color: transparent;
+             border: 1px solid var(--border-color);
+             color: var(--text-secondary);
+             font-weight: 500;
+        }
+        
+        #sort-order-btn:hover {
+             background-color: var(--border-color);
+             color: var(--text-primary);
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        .transaction-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .transaction-table th, .transaction-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            white-space: nowrap;
+        }
+        
+        .transaction-table th.th-amount, .transaction-table td.amount-cell {
+            text-align: right;
+        }
+
+        .transaction-table th {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .transaction-table tbody tr {
+            transition: background-color 0.2s ease;
+        }
+
+        .transaction-table tbody tr:hover {
+            background-color: #374151;
+        }
+
+        .transaction-table .amount-cell.income { color: var(--income-color); font-weight: 500; }
+        .transaction-table .amount-cell.expense { color: var(--expense-color); font-weight: 500; }
+        
+        .clickable-name {
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--primary-hover);
+            transition: color 0.2s ease;
+        }
+        .clickable-name:hover {
+            text-decoration: underline;
+            color: var(--primary-color);
+        }
+
+        .screenshot-cell img {
+            max-width: 40px;
+            max-height: 40px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .screenshot-cell img:hover {
+            transform: scale(1.1);
+        }
+        .screenshot-cell span {
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .transaction-table .empty-row td {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            max-width: 90vw;
+            max-height: 90vh;
+            border-radius: 8px;
+        }
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .new-row {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 900px) {
+            .auth-wrapper {
+                grid-template-columns: 1fr;
+                max-width: 450px;
+                min-height: 0;
+            }
+            .auth-branding {
+                padding: 2.5rem;
+            }
+            .auth-form-panel {
+                padding: 2.5rem;
+            }
+        }
+
+        @media (max-width: 1024px) {
+             .main-content { grid-template-columns: 1fr; }
+        }
+        
+        @media (max-width: 600px) {
+            body { padding: 0; }
+            #app-container { padding: 1rem; }
+            header { flex-direction: column; align-items: flex-start; }
+            .controls-header { flex-direction: column; align-items: stretch;}
+            .controls { flex-direction: column; }
+            .form-row { flex-direction: column; gap: 1rem; }
+            .auth-branding, .auth-form-panel { padding: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    
+    <div id="auth-container">
+        <div class="auth-wrapper">
+            <div class="auth-branding">
+                <div class="branding-content">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L2 7V17L12 22L22 17V7L12 2Z" stroke="var(--primary-color)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M2 7L12 12M22 7L12 12M12 22V12M17 4.5L7 9.5" stroke="var(--primary-color)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <h1>Welcome Back</h1>
+                    <p>Log in to manage your income and expenses effortlessly.</p>
+                </div>
+            </div>
+            <div class="auth-form-panel">
+                <div id="login-box">
+                    <!-- Login Form -->
+                   <div id="login-form">
+                       <h2>Login</h2>
+                       <form class="form-container" id="login">
+                           <div class="form-group">
+                               <label for="login-email">Email</label>
+                               <input type="email" id="login-email" required placeholder="you@example.com">
+                           </div>
+                           <div class="form-group">
+                               <label for="login-password">Password</label>
+                               <input type="password" id="login-password" required placeholder="••••••••">
+                           </div>
+                           <button type="submit">Login</button>
+                       </form>
+                       <div class="divider">OR</div>
+                       <button type="button" id="google-signin-btn" class="google-btn">
+                           <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" xmlns:xlink="http://www.w3.org/1999/xlink" style="display: block;">
+                               <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
+                               <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
+                               <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
+                               <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
+                               <path fill="none" d="M0 0h48v48H0z"></path>
+                           </svg>
+                           <span>Sign in with Google</span>
+                       </button>
+                        <div class="auth-form-toggle">
+                           <span>Don't have an account?</span>
+                           <button id="show-signup">Sign Up</button>
+                       </div>
+                   </div>
+       
+                   <!-- Signup Form -->
+                   <div id="signup-form" style="display: none;">
+                       <h2>Sign Up</h2>
+                       <form class="form-container" id="signup">
+                            <div class="form-group">
+                               <label for="signup-email">Email</label>
+                               <input type="email" id="signup-email" required placeholder="you@example.com">
+                           </div>
+                           <div class="form-group">
+                               <label for="signup-password">Password</label>
+                               <input type="password" id="signup-password" required placeholder="6+ characters">
+                           </div>
+                           <button type="submit">Create Account</button>
+                       </form>
+                       <div class="auth-form-toggle">
+                           <span>Already have an account?</span>
+                           <button id="show-login">Login</button>
+                       </div>
+                   </div>
+                   
+                   <p id="error-message"></p>
+               </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="app-container">
+        <div class="container">
+            <header>
+                <div class="header-left">
+                     <h1>Dashboard</h1>
+                     <button id="logout-btn">Logout</button>
+                </div>
+                <div id="clock"></div>
+            </header>
+    
+            <section class="summary-cards">
+                <div class="card summary-card">
+                    <div class="icon">📈</div>
+                    <div class="title">Total Income</div>
+                    <div class="value income" id="total-income">₹0.00</div>
+                </div>
+                <div class="card summary-card">
+                    <div class="icon">📉</div>
+                    <div class="title">Total Expense</div>
+                    <div class="value expense" id="total-expense">₹0.00</div>
+                </div>
+                <div class="card summary-card">
+                    <div class="icon">⚖️</div>
+                    <div class="title">Net Balance</div>
+                    <div class="value" id="net-balance">₹0.00</div>
+                </div>
+            </section>
+    
+            <main class="main-content">
+                <section id="form-card" class="card form-container">
+                    <h2>Add Transaction</h2>
+                    <form id="add-form">
+                         <div class="form-group">
+                            <label for="transaction-flow">Transaction Type</label>
+                            <select id="transaction-flow" required>
+                                <option value="expense">Outgoing (Expense)</option>
+                                <option value="income">Incoming (Income)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="name">Name / Description</label>
+                            <input type="text" id="name" placeholder="e.g., Dinner with friends" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="amount">Amount (₹)</label>
+                            <input type="number" id="amount" placeholder="e.g., 1500" min="0" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="madeBy">Made By</label>
+                            <input type="text" id="madeBy" placeholder="e.g., John Doe" required>
+                        </div>
+                         <div class="form-group">
+                            <label for="payment-method">Payment Method</label>
+                            <select id="payment-method">
+                                <option value="GPay">GPay</option>
+                                <option value="Cash">Cash</option>
+                                <option value="Card">Card</option>
+                                <option value="Net Banking">Net Banking</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                         <div class="form-group">
+                            <label for="bank">Bank (optional)</label>
+                            <input type="text" id="bank" placeholder="e.g., SBI">
+                        </div>
+                         <div class="form-row">
+                            <div class="form-group">
+                                <label for="date">Date</label>
+                                <input type="date" id="date" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="time">Time</label>
+                                <input type="time" id="time" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                             <label for="screenshot">Screenshot (GPay/Net Bank)</label>
+                             <input type="file" id="screenshot" accept="image/*">
+                        </div>
+                        <button type="submit">Add Transaction</button>
+                    </form>
+                </section>
+    
+                <section id="history-card" class="card">
+                    <div class="controls-header">
+                        <div class="header-title">
+                            <button id="back-btn" class="hidden">← Back</button>
+                            <h2 id="history-title">History</h2>
+                        </div>
+                        <div class="controls">
+                            <input type="text" id="filter-input" placeholder="Search...">
+                            <select id="sort-by">
+                                <option value="datetime">Sort by Date</option>
+                                <option value="amount">Sort by Amount</option>
+                                <option value="name">Sort by Name</option>
+                            </select>
+                            <button id="sort-order-btn">Desc ⬇️</button>
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="transaction-table">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Name</th>
+                                    <th class="th-amount">Amount</th>
+                                    <th>Made By</th>
+                                    <th>Method</th>
+                                    <th>Bank</th>
+                                    <th>Date & Time</th>
+                                    <th>Screenshot</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transaction-list">
+                                <!-- Rows are injected here by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- Screenshot Modal -->
+    <div id="image-modal" class="modal">
+      <span class="modal-close">&times;</span>
+      <img class="modal-content" id="modal-image">
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <script>
+        // --- IMPORTANT: PASTE YOUR FIREBASE CONFIGURATION HERE ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyDIH14qmeBqddEBCMNPHwZCQ7mBgBwepmI",
+            authDomain: "expensedash.firebaseapp.com",
+            projectId: "expensedash",
+            storageBucket: "expensedash.appspot.com",
+            messagingSenderId: "903101496287",
+            appId: "1:903101496287:web:4d3d4a39aaf57e1005226a"
+        };
+        // --- END OF FIREBASE CONFIGURATION ---
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        let transactionsCollection;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- GLOBAL DOM REFERENCES ---
+            const authContainer = document.getElementById('auth-container');
+            const appContainer = document.getElementById('app-container');
+            const errorMessage = document.getElementById('error-message');
+            
+            // --- AUTH DOM REFERENCES ---
+            const loginForm = document.getElementById('login');
+            const signupForm = document.getElementById('signup');
+            const showSignupBtn = document.getElementById('show-signup');
+            const showLoginBtn = document.getElementById('show-login');
+            const loginBox = document.getElementById('login-form');
+            const signupBox = document.getElementById('signup-form');
+            const logoutBtn = document.getElementById('logout-btn');
+            const googleSignInBtn = document.getElementById('google-signin-btn');
+
+            // --- APP DOM REFERENCES ---
+            const form = document.getElementById('add-form');
+            const transactionFlowInput = document.getElementById('transaction-flow');
+            const nameInput = document.getElementById('name');
+            const amountInput = document.getElementById('amount');
+            const madeByInput = document.getElementById('madeBy');
+            const paymentMethodInput = document.getElementById('payment-method');
+            const bankInput = document.getElementById('bank');
+            const dateInput = document.getElementById('date');
+            const timeInput = document.getElementById('time');
+            const screenshotInput = document.getElementById('screenshot');
+            
+            const transactionList = document.getElementById('transaction-list');
+            const filterInput = document.getElementById('filter-input');
+            const sortBySelect = document.getElementById('sort-by');
+            const sortOrderBtn = document.getElementById('sort-order-btn');
+            
+            const totalIncomeEl = document.getElementById('total-income');
+            const totalExpenseEl = document.getElementById('total-expense');
+            const netBalanceEl = document.getElementById('net-balance');
+            
+            const clockEl = document.getElementById('clock');
+            const backBtn = document.getElementById('back-btn');
+            const historyTitle = document.getElementById('history-title');
+
+            const imageModal = document.getElementById('image-modal');
+            const modalImage = document.getElementById('modal-image');
+            const modalClose = document.querySelector('.modal-close');
+
+            // --- STATE MANAGEMENT ---
+            let allTransactions = [];
+            let sortOrder = 'desc';
+            let selectedName = null;
+            let unsubscribe; // To detach Firestore listener on logout
+
+            // --- AUTHENTICATION LOGIC ---
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    // User is signed in.
+                    authContainer.style.display = 'none';
+                    appContainer.style.display = 'block';
+                    
+                    // Setup Firestore collection reference for the logged-in user
+                    transactionsCollection = db.collection('users').doc(user.uid).collection('transactions');
+                    
+                    // Start listening for real-time updates
+                    listenForTransactions();
+
+                    // Initial setup
+                    setInitialDateTime();
+                    updateClock();
+                    setInterval(updateClock, 1000 * 30);
+                } else {
+                    // User is signed out.
+                    authContainer.style.display = 'flex';
+                    appContainer.style.display = 'none';
+
+                    // Stop listening to old user's data
+                    if (unsubscribe) {
+                        unsubscribe();
+                    }
+                    allTransactions = []; // Clear local data
+                    renderTransactions(); // Clear the table
+                }
+            });
+
+            // Toggle between Login and Signup forms
+            showSignupBtn.addEventListener('click', () => {
+                loginBox.style.display = 'none';
+                signupBox.style.display = 'block';
+                errorMessage.textContent = '';
+            });
+
+            showLoginBtn.addEventListener('click', () => {
+                signupBox.style.display = 'none';
+                loginBox.style.display = 'block';
+                errorMessage.textContent = '';
+            });
+
+            // Handle Signup
+            signupForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = document.getElementById('signup-email').value;
+                const password = document.getElementById('signup-password').value;
+                
+                auth.createUserWithEmailAndPassword(email, password)
+                    .catch(error => {
+                        errorMessage.textContent = error.message;
+                    });
+            });
+
+            // Handle Login
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+
+                auth.signInWithEmailAndPassword(email, password)
+                    .catch(error => {
+                        errorMessage.textContent = error.message;
+                    });
+            });
+
+            // Handle Google Sign in
+            googleSignInBtn.addEventListener('click', () => {
+                const provider = new firebase.auth.GoogleAuthProvider();
+                auth.signInWithPopup(provider)
+                    .catch(error => {
+                        errorMessage.textContent = error.message;
+                    });
+            });
+
+            // Handle Logout
+            logoutBtn.addEventListener('click', () => {
+                auth.signOut();
+            });
+
+
+            // --- UTILITY FUNCTIONS ---
+            const formatCurrency = (amount) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(amount);
+            const formatDateTime = (isoString) => {
+                if (!isoString) return 'N/A';
+                const date = new Date(isoString);
+                return date.toLocaleString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+            };
+            
+            // --- FIRESTORE & APP CORE FUNCTIONS ---
+            function listenForTransactions() {
+                // Detach any previous listener
+                if (unsubscribe) {
+                    unsubscribe();
+                }
+                // Listen for real-time updates from Firestore
+                unsubscribe = transactionsCollection.onSnapshot(snapshot => {
+                    allTransactions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    renderTransactions();
+                }, error => {
+                    console.error("Error fetching transactions: ", error);
+                });
+            }
+
+            const updateSummary = (transactionsToDisplay) => {
+                const totalIncome = transactionsToDisplay.filter(t => t.flow === 'income').reduce((sum, t) => sum + t.amount, 0);
+                const totalExpense = transactionsToDisplay.filter(t => t.flow === 'expense').reduce((sum, t) => sum + t.amount, 0);
+                const netBalance = totalIncome - totalExpense;
+
+                totalIncomeEl.textContent = formatCurrency(totalIncome);
+                totalExpenseEl.textContent = formatCurrency(totalExpense);
+                netBalanceEl.textContent = formatCurrency(netBalance);
+                netBalanceEl.style.color = netBalance >= 0 ? 'var(--income-color)' : 'var(--expense-color)';
+            };
+
+            const renderTransactions = () => {
+                transactionList.innerHTML = '';
+                
+                let transactionsToDisplay = [...allTransactions]; // Create a copy for filtering/sorting
+                const filterValue = filterInput.value.toLowerCase();
+
+                if (selectedName) {
+                    transactionsToDisplay = transactionsToDisplay.filter(t => t.name === selectedName);
+                }
+                
+                if (filterValue) {
+                    transactionsToDisplay = transactionsToDisplay.filter(t => 
+                        t.name.toLowerCase().includes(filterValue) ||
+                        t.madeBy.toLowerCase().includes(filterValue) ||
+                        t.method.toLowerCase().includes(filterValue) ||
+                        (t.bank && t.bank.toLowerCase().includes(filterValue))
+                    );
+                }
+                
+                const sortBy = sortBySelect.value;
+                transactionsToDisplay.sort((a, b) => {
+                    const valA = a[sortBy];
+                    const valB = b[sortBy];
+                    let comparison = 0;
+                    if (valA > valB) comparison = 1;
+                    else if (valA < valB) comparison = -1;
+                    return sortOrder === 'asc' ? comparison : -comparison;
+                });
+                
+                if (transactionsToDisplay.length === 0) {
+                    const row = document.createElement('tr');
+                    row.classList.add('empty-row');
+                    row.innerHTML = `<td colspan="8">No transactions found.</td>`;
+                    transactionList.appendChild(row);
+                } else {
+                    transactionsToDisplay.forEach(t => {
+                        const row = document.createElement('tr');
+                        if (t.isNew) {
+                             row.classList.add('new-row');
+                             // This property is transient and should not be in Firestore
+                        }
+                        const amountClass = t.flow === 'income' ? 'income' : 'expense';
+                        row.innerHTML = `
+                            <td><span class="${amountClass}" style="text-transform: capitalize;">${t.flow}</span></td>
+                            <td class="clickable-name" data-name="${t.name}">${t.name}</td>
+                            <td class="amount-cell ${amountClass}">${formatCurrency(t.amount)}</td>
+                            <td>${t.madeBy}</td>
+                            <td>${t.method}</td>
+                            <td>${t.bank || 'N/A'}</td>
+                            <td>${formatDateTime(t.datetime)}</td>
+                            <td class="screenshot-cell">
+                                ${t.screenshot ? `<img src="${t.screenshot}" alt="screenshot" class="screenshot-preview">` : '<span>None</span>'}
+                            </td>
+                        `;
+                        transactionList.appendChild(row);
+                    });
+                }
+                updateSummary(transactionsToDisplay);
+            };
+            
+            const handleAddTransaction = (e) => {
+                e.preventDefault();
+
+                const newTransaction = {
+                    flow: transactionFlowInput.value,
+                    name: nameInput.value,
+                    amount: parseFloat(amountInput.value),
+                    madeBy: madeByInput.value,
+                    method: paymentMethodInput.value,
+                    bank: bankInput.value,
+                    datetime: new Date(`${dateInput.value}T${timeInput.value}`).toISOString(),
+                    screenshot: null
+                };
+
+                const screenshotFile = screenshotInput.files[0];
+                if (screenshotFile) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        newTransaction.screenshot = event.target.result;
+                        finalizeTransaction(newTransaction);
+                    };
+                    reader.onerror = function(error) {
+                        console.error("File could not be read: ", error);
+                        finalizeTransaction(newTransaction);
+                    };
+                    reader.readAsDataURL(screenshotFile);
+                } else {
+                    finalizeTransaction(newTransaction);
+                }
+            };
+            
+            const finalizeTransaction = (transaction) => {
+                if (transactionsCollection) {
+                    transactionsCollection.add(transaction)
+                        .then(() => {
+                             form.reset();
+                             setInitialDateTime();
+                        })
+                        .catch(error => {
+                            console.error("Error adding document: ", error);
+                            alert("Could not save transaction. Please try again.");
+                        });
+                }
+            };
+
+            const enterDetailsView = (name) => {
+                selectedName = name;
+                historyTitle.textContent = `History for: ${name}`;
+                backBtn.classList.remove('hidden');
+                filterInput.value = '';
+                renderTransactions();
+            };
+
+            const exitDetailsView = () => {
+                selectedName = null;
+                historyTitle.textContent = 'History';
+                backBtn.classList.add('hidden');
+                filterInput.value = '';
+                renderTransactions();
+            };
+            
+            const toggleSortOrder = () => {
+                sortOrder = (sortOrder === 'desc') ? 'asc' : 'desc';
+                sortOrderBtn.textContent = (sortOrder === 'desc') ? 'Desc ⬇️' : 'Asc ⬆️';
+                renderTransactions();
+            };
+
+            const updateClock = () => {
+                const now = new Date();
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+                clockEl.textContent = now.toLocaleDateString('en-IN', options);
+            };
+
+            const setInitialDateTime = () => {
+                const now = new Date();
+                now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+                dateInput.value = now.toISOString().split('T')[0];
+                timeInput.value = now.toTimeString().split(' ')[0].substring(0, 5);
+            };
+
+            // --- EVENT LISTENERS ---
+            form.addEventListener('submit', handleAddTransaction);
+            filterInput.addEventListener('input', renderTransactions);
+            sortBySelect.addEventListener('change', renderTransactions);
+            sortOrderBtn.addEventListener('click', toggleSortOrder);
+            backBtn.addEventListener('click', exitDetailsView);
+            
+            transactionList.addEventListener('click', (e) => {
+                if (e.target.classList.contains('clickable-name')) {
+                    const name = e.target.dataset.name;
+                    enterDetailsView(name);
+                }
+                if (e.target.classList.contains('screenshot-preview')) {
+                    modalImage.src = e.target.src;
+                    imageModal.style.display = 'flex';
+                }
+            });
+
+            modalClose.addEventListener('click', () => imageModal.style.display = 'none');
+            imageModal.addEventListener('click', (e) => {
+                if(e.target === imageModal) {
+                    imageModal.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
+
